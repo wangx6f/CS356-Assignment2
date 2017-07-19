@@ -10,12 +10,14 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+import java.util.List;
+
 /**
  * Created by Xinyuan Wang on 7/8/2017.
  */
 public class AdminControlPanel extends Application {
 
-    static final private int SCENE_HEIGHT = 500;
+    static final private int SCENE_HEIGHT = 550;
     static final private int SCENE_WIDTH = 600;
     static final private double SPACING = 20f;
     static final private double GAP_SPACING = 100f;
@@ -86,8 +88,14 @@ public class AdminControlPanel extends Application {
         totalTweet.setOnMouseClicked(mouseEvent -> {countTweet();});
         Button positive = new Button("Show Positive Percentage");
         positive.setOnMouseClicked(mouseEvent -> {countPositiveTweet();});
+        Button verification = new Button("ID Verification");
+        verification.setOnMouseClicked(event -> {verifyID();});
+        Button lastUpdate = new Button("Last Updated User");
+        lastUpdate.setOnMouseClicked(event -> {getLastUpdatedUser();});
+
+
         VBox bottomBox = new VBox(SPACING);
-        bottomBox.getChildren().addAll(totalUser,totalGroup,totalTweet,positive);
+        bottomBox.getChildren().addAll(totalUser,totalGroup,totalTweet,positive,verification,lastUpdate);
         bottomBox.setPadding(new Insets(SPACING));
         VBox mainBox = new VBox(GAP_SPACING);
         mainBox.getChildren().addAll(topBox,bottomBox);
@@ -174,6 +182,29 @@ public class AdminControlPanel extends Application {
         showMsgDialog("Positive Tweet","The total number of positive tweet is "
                 +positiveTweetVisitor.getPercentage()*100+"%."+
                 "\n(positive tweet - hash code mod 100 >50)");
+    }
+
+    private void verifyID()
+    {
+        IDVerifyVisitor idVerifyVisitor = new IDVerifyVisitor();
+        mServer.traverse(idVerifyVisitor);
+        List validList = idVerifyVisitor.getValidID();
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("The following ID is valid:\n");
+
+        for(int i=0;i<validList.size();i++){
+            stringBuilder.append(validList.get(i));
+            stringBuilder.append("\n");
+        }
+        showMsgDialog("ID Verification",stringBuilder.toString());
+    }
+
+    private void getLastUpdatedUser()
+    {
+        UpdateTimeVisitor updateTimeVisitor = new UpdateTimeVisitor();
+        mServer.traverse(updateTimeVisitor);
+        showMsgDialog("Last Updated User","Last updated user is "+updateTimeVisitor.getLastUpdatedUserID()+
+        " with time "+updateTimeVisitor.getLastUpdatedTime());
     }
 
 

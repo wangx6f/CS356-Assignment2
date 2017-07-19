@@ -15,12 +15,20 @@ public class User extends Observable implements Component,Observer{
 
     private List<User> followingList;
 
+    private long creationTime;
+
+    private long lastUpdateTime;
+
+
     public User(String userID)
     {
+        creationTime = System.currentTimeMillis();
+        lastUpdateTime=creationTime;
         this.userID = userID;
         this.myTweetList = new ArrayList<>();
         this.followingList = new ArrayList<>();
         followingList.add(this);
+        attachObserver(this);
     }
 
     @Override
@@ -43,11 +51,17 @@ public class User extends Observable implements Component,Observer{
         cv.visitUser(this);
     }
 
+    @Override
+    public long getCreationTime() {
+        return creationTime;
+    }
+
     public void follow(User followingTarget)
     {
         if(!followingList.contains(followingTarget)) {
             followingList.add(followingTarget);
             followingTarget.attachObserver(this);
+            updateTime();
             notifyAllObserver(new UIUpdateIntent());
         }
     }
@@ -56,7 +70,6 @@ public class User extends Observable implements Component,Observer{
     {
         myTweetList.add(new TextTweet(userID,context));
         notifyAllObserver(new NewTweetIntent());
-        notifyAllObserver(new UIUpdateIntent());
 
     }
 
@@ -67,9 +80,20 @@ public class User extends Observable implements Component,Observer{
     @Override
     public void update(Intent intent) {
 
-        if(intent instanceof NewTweetIntent)
+        if(intent instanceof NewTweetIntent) {
+            updateTime();
             notifyAllObserver(new UIUpdateIntent());
+        }
     }
+
+    private void updateTime(){
+        lastUpdateTime = System.currentTimeMillis();
+    }
+
+    public long getLastUpdateTime() {
+        return lastUpdateTime;
+    }
+
 
     public List<Tweet> getAllTweets()
     {

@@ -16,5 +16,7 @@ public interface Component  {
 
     public void accept(ComponentVisitor cv);
 
+    public long getCreationTime();
+
 
 }

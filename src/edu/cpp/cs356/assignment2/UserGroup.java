@@ -12,7 +12,10 @@ public class UserGroup implements Component {
 
     private List<Component> children;
 
+    private long creationTime;
+
     public UserGroup(String groupID) {
+        creationTime = System.currentTimeMillis();
         this.groupID = groupID;
         children = new ArrayList<>();
     }
@@ -37,5 +40,10 @@ public class UserGroup implements Component {
     @Override
     public void accept(ComponentVisitor cv) {
         cv.visitUserGroup(this);
+    }
+
+    @Override
+    public long getCreationTime() {
+        return creationTime;
     }
 }

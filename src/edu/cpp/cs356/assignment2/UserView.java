@@ -2,6 +2,7 @@ package edu.cpp.cs356.assignment2;
 
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -21,7 +22,7 @@ import java.util.List;
 public class UserView implements Observer {
 
     static final private int SCENE_HEIGHT = 500;
-    static final private int SCENE_WIDTH = 600;
+    static final private int SCENE_WIDTH = 700;
     static final private double SPACING = 10f;
 
     private Server mServer;
@@ -31,6 +32,8 @@ public class UserView implements Observer {
     private ListView followingListView;
 
     private ListView newsFeedListView;
+
+    private Label updateTimeLabel;
 
 
     public UserView(Server server, User thisUser)
@@ -62,8 +65,12 @@ public class UserView implements Observer {
         followUser.setOnMouseClicked(event -> {
             follow(userIDInput.getText());
         });
+        Label creationTime = new Label("Creation Time: "+mUser.getCreationTime());
+        updateTimeLabel = new Label();
+        updateTime();
         HBox followUserBox = new HBox(SPACING);
-        followUserBox.getChildren().addAll(userIDInput,followUser);
+        followUserBox.setAlignment(Pos.BOTTOM_LEFT);
+        followUserBox.getChildren().addAll(userIDInput,followUser,creationTime,updateTimeLabel);
 
 
         Label followingLabel = new Label("Currently following:");
@@ -145,6 +152,11 @@ public class UserView implements Observer {
 
     }
 
+    private void updateTime()
+    {
+        updateTimeLabel.setText("Last update time: "+mUser.getLastUpdateTime());
+    }
+
     private void showAlert(String message)
     {
         new Alert(Alert.AlertType.WARNING,message).show();
@@ -152,8 +164,10 @@ public class UserView implements Observer {
 
     @Override
     public void update(Intent intent) {
-        if(intent instanceof UIUpdateIntent)
-        updateFollowingInfo();
+        if(intent instanceof UIUpdateIntent) {
+            updateFollowingInfo();
+            updateTime();
+        }
     }
 
 }
